@@ -8,7 +8,7 @@ exports.addData = async (req, res) => {
         if (!email || !Array.isArray(coordinate)) {
             return res.status(400).json({
                 message: "Email atau koordinat tidak valid",
-                status: 400
+                status: 400,
             });
         }
 
@@ -36,7 +36,7 @@ exports.getData = async (req, res) => {
         if (!email) {
             return res.status(400).json({
                 message: "Email tidak ditemukan",
-                status: 400
+                status: 400,
             });
         }
 
@@ -50,6 +50,41 @@ exports.getData = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error: Gagal mengambil data",
+            status: 500,
+            error: error.message,
+        });
+    }
+};
+
+exports.deleteData = async (req, res) => {
+    try {
+        const { email } = req.params;
+        const { coordinate } = req.body;
+
+        if (!email || !coordinate) {
+            return res.status(400).json({
+                message: "Email atau koordinat tidak boleh kosong",
+                status: 400,
+            });
+        }
+
+        const result = await Mangrove.findOneAndDelete({ email, coordinate });
+
+        if (!result) {
+            return res.status(404).json({
+                message: "Data tidak ditemukan",
+                status: 404,
+            });
+        }
+
+        res.status(200).json({
+            message: "Berhasil menghapus data",
+            status: 200,
+            data: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error: Gagal menghapus data",
             status: 500,
             error: error.message,
         });

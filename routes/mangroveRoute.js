@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const mangroveController = require("../controllers/mangroveController");
 
-router.post("/add/:email", mangroveController.addData);
-router.get("/get/:email", mangroveController.getData);
+router.post("/mangrove/:email", mangroveController.addData);
+router.get("/mangrove/:email", mangroveController.getData);
+router.delete("/mangrove/:email", mangroveController.deleteData);
 
 module.exports = router;
