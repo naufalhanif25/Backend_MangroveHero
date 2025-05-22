@@ -4,11 +4,13 @@ if (process.env.NODE_ENV !== "production") {
 
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const mangroveRoute = require("./routes/mangroveRoute");
 
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
+app.use(cors())
 app.use(express.json());
 
 const PORT = 3000;
