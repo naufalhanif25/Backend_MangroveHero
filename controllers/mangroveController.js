@@ -1,5 +1,13 @@
 const Mangrove = require("../models/Mangrove");
 
+function getStatusByDays(days) {
+    if (days <= 2) return "Bibit";
+    if (days <= 6) return "Muda";
+    if (days <= 12) return "Dewasa";
+
+    return "Tua";
+}
+
 exports.addData = async (req, res) => {
     try {
         const { coordinate } = req.body;
@@ -42,10 +50,28 @@ exports.getData = async (req, res) => {
 
         const data = await Mangrove.find({ email });
 
+        const updatedData = await Promise.all(
+            data.map(async (tree) => {
+                const days = Math.floor(
+                    (Date.now() - new Date(tree.plantedAt)) /
+                        (1000 * 60 * 60 * 24)
+                );
+                const currentStatus = getStatusByDays(days);
+
+                if (tree.status !== currentStatus) {
+                    tree.status = currentStatus;
+
+                    await tree.save();
+                }
+
+                return tree;
+            })
+        );
+
         res.status(200).json({
-            message: "Berhasil mengambil data",
+            message: "Berhasil mengambil dan memperbarui data",
             status: 200,
-            data,
+            data: updatedData,
         });
     } catch (error) {
         res.status(500).json({
