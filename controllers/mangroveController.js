@@ -59,18 +59,17 @@ exports.addData = async (req, res) => {
 
 exports.getCoins = async (req, res) => {
     try {
-        const { email } = req.params;
-        const { coordinate } = req.body;
+        const { email, row, column } = req.params;
+        const coordinate = [row, column];
 
         if (!email || !coordinate) {
             return res.status(400).json({
-                message: "Email atau koordinat tidak boleh kosong",
+                message: "Email atau koordinat tidak ditemukan",
                 status: 400,
             });
         }
 
         const tree = await Mangrove.findOne({ email, coordinate });
-
         const coins = tree.coins;
 
         tree.coins = 0;
@@ -95,8 +94,9 @@ exports.getCoins = async (req, res) => {
 
 exports.getData = async (req, res) => {
     try {
-        const { email } = req.params;
-        const { coordinate } = req.body ?? [];
+        const { email, row, column } = req.params;
+        const coordinateState = row && column;
+        const coordinate = [row, column];
 
         if (!email) {
             return res.status(400).json({
@@ -105,16 +105,9 @@ exports.getData = async (req, res) => {
             });
         }
 
-        if (coordinate && !Array.isArray(coordinate)) {
-            return res.status(400).json({
-                message: "Koordinat tidak valid",
-                status: 400,
-            });
-        }
-
         let data;
 
-        if (coordinate) {
+        if (coordinateState) {
             data = await Mangrove.find({ email, coordinate });
         } else {
             data = await Mangrove.find({ email });
@@ -139,7 +132,7 @@ exports.getData = async (req, res) => {
         );
 
         res.status(200).json({
-            message: `Berhasil mengambil dan memperbarui data`,
+            message: `Berhasil mengambil dan memperbarui data ${coordinateState}`,
             status: 200,
             data: updatedData,
         });
