@@ -10,6 +10,15 @@ const Mangrove = new mongoose.Schema(
             required: true,
             default: "Bibit",
         },
+        coins: {
+            type: Number,
+            required: true,
+            default: 0,
+        },
+        lastCoinGenerated: {
+            type: Date,
+            default: Date.now,
+        },
         plantedAt: {
             type: Date,
             default: Date.now,
