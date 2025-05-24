@@ -6,7 +6,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const mangroveRoute = require("./routes/mangroveRoute");
-
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
