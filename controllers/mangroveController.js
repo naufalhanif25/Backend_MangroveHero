@@ -11,14 +11,14 @@ function getStatusByDays(days) {
 function generateCoins(tree) {
     const now = Date.now();
     const last = new Date(tree.lastCoinGenerated).getTime();
-    const diffMinutes = Math.floor((now - last) / 60000);
+    const diffHours = Math.floor((now - last) / (1000 * 60 * 60));
 
-    if (diffMinutes <= 0) return tree;
+    if (diffHours <= 0) return tree;
 
     let totalCoins = 0;
 
-    for (let i = 0; i < diffMinutes; i++) {
-        totalCoins += Math.floor(Math.random() * (8 - 2 + 1)) + 2;
+    for (let i = 0; i < diffHours; i++) {
+        totalCoins += Math.floor(Math.random() * (3 - 1 + 1)) + 1;
     }
 
     tree.coins += totalCoins;
@@ -26,7 +26,6 @@ function generateCoins(tree) {
 
     return tree;
 }
-
 
 exports.addData = async (req, res) => {
     try {
