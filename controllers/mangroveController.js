@@ -162,9 +162,9 @@ exports.getData = async (req, res) => {
         res.status(200).json({
             message: `Berhasil mengambil dan memperbarui data ${coordinateState}`,
             status: 200,
-            data: {
+            data: [
                 ...updatedData
-            },
+            ],
             healthAvg: (healthTotal / updatedData.length)
         });
     } 
