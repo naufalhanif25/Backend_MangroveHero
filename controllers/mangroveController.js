@@ -159,13 +159,15 @@ exports.getData = async (req, res) => {
             updatedData.push(tree);
         }
 
+        const healthAvg = (healthTotal / updatedData.length);
+
         res.status(200).json({
             message: `Berhasil mengambil dan memperbarui data ${coordinateState}`,
             status: 200,
             data: [
                 ...updatedData
             ],
-            healthAvg: (healthTotal / updatedData.length)
+            healthAvg: healthAvg ? healthAvg : 0
         });
     } 
     catch (error) {
