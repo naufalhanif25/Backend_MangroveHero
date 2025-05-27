@@ -184,16 +184,15 @@ exports.addFertilizer = async (req, res) => {
             });
         }
 
-        const mangrove = Mangrove.findOne({ email, coordinate });
+        const mangrove = await Mangrove.findOne({ email, coordinate });
 
-        mangrove.health += 7;
-        mangrove.health > 100 ? 100 : mangrove.health;
+        mangrove.health = (mangrove.health + 7) > 100 ? 100 : (mangrove.health + 7);
         mangrove.save();
 
         res.status(200).json({
             message: `Berhasil memberikan pupuk pada mengrove`,
             status: 200,
-            data: updatedData,
+            data: mangrove,
         });
     }
     catch (error) {
