@@ -132,6 +132,7 @@ exports.getData = async (req, res) => {
         }
 
         const updatedData = [];
+        let healthTotal = 0;
 
         for (const tree of data) {
             const days = Math.floor(
@@ -149,6 +150,7 @@ exports.getData = async (req, res) => {
             }
 
             tree.status = currentStatus;
+            healthTotal += tree.health;
 
             await coins.save();
             await health.save();
@@ -160,7 +162,10 @@ exports.getData = async (req, res) => {
         res.status(200).json({
             message: `Berhasil mengambil dan memperbarui data ${coordinateState}`,
             status: 200,
-            data: updatedData,
+            data: {
+                ...updatedData
+            },
+            healthAvg: (healthTotal / updatedData.length)
         });
     } 
     catch (error) {
