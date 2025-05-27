@@ -16,7 +16,7 @@ const user = mongoose.Schema({
     },
     purchases: {
         type: []
-    },
+    }
 });
 
 module.exports = mongoose.model("User", user);

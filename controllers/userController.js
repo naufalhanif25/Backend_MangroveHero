@@ -53,10 +53,17 @@ exports.getUser = async (req, res) => {
 
         const user = await User.findOne({ email });
 
+        const mangroveLength = user.purchases.filter(p => p.item === 0).length;
+        const fertilizerLength = user.purchases.filter(p => p.item === 1).length;
+
         res.status(200).json({
             message: "Berhasil mengambil data pengguna",
             status: 200,
-            data: user,
+            data: {
+                ...user.toObject(),
+                mangroveLength,
+                fertilizerLength,
+            }
         });
     }
     catch (error) {
@@ -157,19 +164,8 @@ exports.getItems = async (req, res) => {
             });
         }
 
-        const purchases = tree.purchases || [];
-
-        let mangroveLength = 0;
-        let fertilizerLength = 0;
-
-        purchases.forEach((item) => {
-            if (item.item === 0) {
-                mangroveLength++;
-            }
-            else {
-                fertilizerLength++;
-            }
-        });
+        const mangroveLength = tree.purchases.filter(p => p.item === 0).length;
+        const fertilizerLength = tree.purchases.filter(p => p.item === 1).length;
 
         return res.status(200).json({
             success: true,
