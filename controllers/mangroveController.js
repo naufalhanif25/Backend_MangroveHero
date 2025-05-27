@@ -1,4 +1,5 @@
 const Mangrove = require("../models/Mangrove");
+const User = require("../models/User");
 
 function getStatusByDays(days) {
     if (days <= 2) return "Bibit";
@@ -69,10 +70,15 @@ exports.getCoins = async (req, res) => {
         }
 
         const tree = await Mangrove.findOne({ email, coordinate });
+        const user = await User.findOne({ email });
+
         const coins = tree.coins;
 
         tree.coins = 0;
         tree.save();
+
+        user.coins += coins;
+        user.save();
 
         res.status(200).json({
             message: `Berhasil mengambil koin`,
@@ -89,6 +95,19 @@ exports.getCoins = async (req, res) => {
             error: error.message,
         });
     }
+}
+
+function reduceHealth(tree) {
+    const now = Date.now();
+    const last = new Date(tree.lastFertilized).getTime();
+    const diffHours = Math.floor((now - last) / (1000 * 60 * 60));
+
+    if (diffHours <= 0) return tree;
+
+    tree.health = Math.max(tree.health - diffHours, 0);
+    tree.lastFertilized = new Date(now);
+
+    return tree;
 }
 
 exports.getData = async (req, res) => {
@@ -112,30 +131,39 @@ exports.getData = async (req, res) => {
             data = await Mangrove.find({ email });
         }
 
-        const updatedData = await Promise.all(
-            data.map(async (tree) => {
-                const days = Math.floor(
-                    (Date.now() - new Date(tree.plantedAt)) /
-                        (1000 * 60 * 60 * 24)
-                );
-                const currentStatus = getStatusByDays(days);
-                const coins = generateCoins(tree);
+        const updatedData = [];
 
-                tree.status = currentStatus;
+        for (const tree of data) {
+            const days = Math.floor(
+                (Date.now() - new Date(tree.plantedAt)) / (1000 * 60 * 60 * 24)
+            );
 
-                await coins.save();
-                await tree.save();
+            const currentStatus = getStatusByDays(days);
+            const coins = generateCoins(tree);
+            const health = reduceHealth(tree);
 
-                return tree;
-            })
-        );
+            if (tree.health <= 0) {
+                await tree.deleteOne();
+
+                continue;
+            }
+
+            tree.status = currentStatus;
+
+            await coins.save();
+            await health.save();
+            await tree.save();
+
+            updatedData.push(tree);
+        }
 
         res.status(200).json({
             message: `Berhasil mengambil dan memperbarui data ${coordinateState}`,
             status: 200,
             data: updatedData,
         });
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({
             message: "Internal Server Error: Gagal mengambil data",
             status: 500,
@@ -143,6 +171,39 @@ exports.getData = async (req, res) => {
         });
     }
 };
+
+exports.addFertilizer = async (req, res) => {
+    try {
+        const { email } = req.params;
+        const { coordinate } = req.body;
+
+        if (!email || !coordinate) {
+            return res.status(400).json({
+                message: "Email atau koordinat tidak valid",
+                status: 400,
+            });
+        }
+
+        const mangrove = Mangrove.findOne({ email, coordinate });
+
+        mangrove.health += 7;
+        mangrove.health > 100 ? 100 : mangrove.health;
+        mangrove.save();
+
+        res.status(200).json({
+            message: `Berhasil memberikan pupuk pada mengrove`,
+            status: 200,
+            data: updatedData,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error: Gagal memberikan pupuk",
+            status: 500,
+            error: error.message,
+        });
+    }
+}
 
 exports.deleteData = async (req, res) => {
     try {

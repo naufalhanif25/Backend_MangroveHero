@@ -6,6 +6,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const mangroveRoute = require("./routes/mangroveRoute");
+const userRoute = require("./routes/userRoute");
 
 const app = express();
 
@@ -37,5 +38,6 @@ connectDB()
     .catch(console.dir);
 
 app.use("/api", mangroveRoute);
+app.use("/api", userRoute);
 
 module.exports = app;

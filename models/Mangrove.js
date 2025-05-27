@@ -16,12 +16,21 @@ const Mangrove = new mongoose.Schema(
             required: true,
             default: "Bibit",
         },
+        health: {
+            type: Number,
+            required: true,
+            default: 100,
+        },
         coins: {
             type: Number,
             required: true,
             default: 0,
         },
         lastCoinGenerated: {
+            type: Date,
+            default: Date.now,
+        },
+        lastFertilized: {
             type: Date,
             default: Date.now,
         },
