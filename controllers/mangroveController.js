@@ -184,118 +184,118 @@ exports.deleteData = async (req, res) => {
     }
 };
 
-exports.buyItems = async (req, res) => {
-    try {
-        const { choice } = req.body;
-        const { email } = req.params;
+// exports.buyItems = async (req, res) => {
+//     try {
+//         const { choice } = req.body;
+//         const { email } = req.params;
 
 
-        if (choice === undefined || ![0, 1].includes(choice)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid choice. Pilih Salah Satu 0 (mangrove) atau 1 (pupuk)."
-            });
-        }
+//         if (choice === undefined || ![0, 1].includes(choice)) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Invalid choice. Pilih Salah Satu 0 (mangrove) atau 1 (pupuk)."
+//             });
+//         }
 
-        if (!email || typeof email !== 'string' || !email.includes('@')) {
-            return res.status(400).json({
-                success: false,
-                message: "gagal menemukan email"
-            });
-        }
-
-
-        const item = choice === 0 ? "mangrove" : "pupuk";
-        const cost = choice === 0 ? 8 : 5;
+//         if (!email || typeof email !== 'string' || !email.includes('@')) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "gagal menemukan email"
+//             });
+//         }
 
 
-        const tree = await Mangrove.findOne({ email });
-        if (!tree) {
-            return res.status(404).json({
-                success: false,
-                message: "User Email Tidak di temukan."
-            });
-        }
+//         const item = choice === 0 ? "mangrove" : "pupuk";
+//         const cost = choice === 0 ? 8 : 5;
 
 
-        if (tree.coins < cost) {
-            return res.status(400).json({
-                success: false,
-                message: `Maap Coins Anda Tidak Cukup. Butuh ${cost} untuk membeli ${item}, kamu hanya meiliki ${tree.coins} tersisa.`
-            });
-        }
+//         const tree = await Mangrove.findOne({ email });
+//         if (!tree) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "User Email Tidak di temukan."
+//             });
+//         }
 
 
-        tree.coins -= cost;
-        await tree.save();
+//         if (tree.coins < cost) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: `Maap Coins Anda Tidak Cukup. Butuh ${cost} untuk membeli ${item}, kamu hanya meiliki ${tree.coins} tersisa.`
+//             });
+//         }
 
 
-        const purchaseResult = {
-            itemPurchased: item,
-            email: email,
-            coinsSpent: cost,
-            remainingCoins: tree.coins,
-            timestamp: new Date().toISOString(),
-            status: "success"
-        };
-
-        return res.status(200).json({
-            success: true,
-            message: `Successfully Beli ${item} for ${email}`,
-            data: purchaseResult
-        });
-
-    } catch (error) {
-        console.error("Error in buyItems:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
-    }
-};
-
-exports.getItems = async (req, res) => {
-    try {
-        const { email } = req.params;
+//         tree.coins -= cost;
+//         await tree.save();
 
 
-        if (!email || typeof email !== 'string' || !email.includes('@')) {
-            return res.status(400).json({
-                success: false,
-                message: "Email Anda Tidak Valid."
-            });
-        }
+//         const purchaseResult = {
+//             itemPurchased: item,
+//             email: email,
+//             coinsSpent: cost,
+//             remainingCoins: tree.coins,
+//             timestamp: new Date().toISOString(),
+//             status: "success"
+//         };
+
+//         return res.status(200).json({
+//             success: true,
+//             message: `Successfully Beli ${item} for ${email}`,
+//             data: purchaseResult
+//         });
+
+//     } catch (error) {
+//         console.error("Error in buyItems:", error);
+//         return res.status(500).json({
+//             success: false,
+//             message: "Internal server error"
+//         });
+//     }
+// };
+
+// exports.getItems = async (req, res) => {
+//     try {
+//         const { email } = req.params;
 
 
-        const tree = await Mangrove.findOne({ email });
-        if (!tree) {
-            return res.status(404).json({
-                success: false,
-                message: "Tidak Dapat Menemukan Data."
-            });
-        }
+//         if (!email || typeof email !== 'string' || !email.includes('@')) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Email Anda Tidak Valid."
+//             });
+//         }
 
 
-        const purchases = tree.purchases || [];
-        return res.status(200).json({
-            success: true,
-            message: `Berhasil Mengambil data item ${email}`,
-            data: {
-                email: email,
-                purchases: purchases.map(purchase => ({
-                    item: purchase.item,
-                    cost: purchase.cost,
-                    timestamp: purchase.timestamp
-                })),
-                totalPurchases: purchases.length
-            }
-        });
+//         const tree = await Mangrove.findOne({ email });
+//         if (!tree) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "Tidak Dapat Menemukan Data."
+//             });
+//         }
 
-    } catch (error) {
-        console.error("Error in getPurchasedItems:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
-    }
-};
+
+//         const purchases = tree.purchases || [];
+//         return res.status(200).json({
+//             success: true,
+//             message: `Berhasil Mengambil data item ${email}`,
+//             data: {
+//                 email: email,
+//                 purchases: purchases.map(purchase => ({
+//                     item: purchase.item,
+//                     cost: purchase.cost,
+//                     timestamp: purchase.timestamp
+//                 })),
+//                 totalPurchases: purchases.length
+//             }
+//         });
+
+//     } catch (error) {
+//         console.error("Error in getPurchasedItems:", error);
+//         return res.status(500).json({
+//             success: false,
+//             message: "Internal server error"
+//         });
+//     }
+// };

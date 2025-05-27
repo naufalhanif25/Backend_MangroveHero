@@ -7,7 +7,7 @@ router.get("/mangrove/:email", mangroveController.getData);
 router.get("/mangrove/:email/:row/:column", mangroveController.getData);
 router.get("/mangrove/coins/:email/:row/:column", mangroveController.getCoins);
 router.delete("/mangrove/:email", mangroveController.deleteData);
-router.post("/buyItems/:email", mangroveController.buyItems);
-router.get("/items/:email", mangroveController.getItems);
+// router.post("/buyItems/:email", mangroveController.buyItems);
+// router.get("/items/:email", mangroveController.getItems);
 
 module.exports = router;
