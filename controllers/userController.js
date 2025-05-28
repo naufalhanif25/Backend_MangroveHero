@@ -53,8 +53,8 @@ exports.getUser = async (req, res) => {
 
         const user = await User.findOne({ email });
 
-        const mangroveLength = user.purchases.filter(p => p.item === 0).length;
-        const fertilizerLength = user.purchases.filter(p => p.item === 1).length;
+        const mangroveLength = user.purchases.filter(p => p.itemIndex === 0).length;
+        const fertilizerLength = user.purchases.filter(p => p.itemIndex === 1).length;
 
         res.status(200).json({
             message: "Berhasil mengambil data pengguna",
@@ -99,6 +99,9 @@ exports.buyItems = async (req, res) => {
         const cost = items === 0 ? 24 : 16;
         const tree = await User.findOne({ email });
 
+        const mangroveLength = tree.purchases.filter(p => p.itemIndex === 0).length;
+        const fertilizerLength = tree.purchases.filter(p => p.itemIndex === 1).length;
+
         if (!tree) {
             return res.status(404).json({
                 success: false,
@@ -127,8 +130,8 @@ exports.buyItems = async (req, res) => {
             email: email,
             coinsSpent: cost,
             remainingCoins: tree.totalCoins,
-            mangroveLength: tree.mangroveLength,
-            fertilizerLength: tree.fertilizerLength,
+            mangroveLength: mangroveLength,
+            fertilizerLength: fertilizerLength,
             timestamp: new Date(),
             status: "success",
         };
@@ -166,8 +169,8 @@ exports.getItems = async (req, res) => {
             });
         }
 
-        const mangroveLength = tree.purchases.filter(p => p.item === 0).length;
-        const fertilizerLength = tree.purchases.filter(p => p.item === 1).length;
+        const mangroveLength = tree.purchases.filter(p => p.itemIndex === 0).length;
+        const fertilizerLength = tree.purchases.filter(p => p.itemIndex === 1).length;
 
         return res.status(200).json({
             success: true,
