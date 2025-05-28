@@ -188,7 +188,9 @@ exports.getData = async (req, res) => {
             data: [
                 ...updatedData
             ],
-            healthAvg: healthAvg ? healthAvg : 0
+            healthAvg: healthAvg ? Number(healthAvg.toFixed(2)) : 0,
+            healthTotal: healthTotal,
+            dataLength: updatedData.length,
         });
     } 
     catch (error) {
