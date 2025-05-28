@@ -41,12 +41,33 @@ exports.addData = async (req, res) => {
         }
 
         const mangrove = new Mangrove({ coordinate, email });
+        const user = await User.findOne({ email });
+
         await mangrove.save();
+
+        let isRemoved = false;
+        const tempArray = [];
+
+        user.purchases.forEach((purchase) => {
+            if (!isRemoved && purchase.itemIndex === 0) {
+                isRemoved = true;
+            }
+            else {
+                tempArray.push(purchase);
+            }
+        })
+        user.purchases = tempArray;
+        user.save();
+
+        const mangroveLength = user.purchases.filter(p => p.itemIndex === 0).length;
+        const fertilizerLength = user.purchases.filter(p => p.itemIndex === 1).length;
 
         res.status(200).json({
             message: "Berhasil menyimpan data",
             status: 200,
             data: mangrove,
+            mangroveLength: mangroveLength,
+            fertilizerLength: fertilizerLength
         });
     } catch (error) {
         res.status(500).json({
@@ -192,14 +213,34 @@ exports.addFertilizer = async (req, res) => {
         }
 
         const mangrove = await Mangrove.findOne({ email, coordinate });
+        const user = await User.findOne({ email });
 
         mangrove.health = (mangrove.health + 7) > 100 ? 100 : (mangrove.health + 7);
         mangrove.save();
 
+        let isRemoved = false;
+        const tempArray = [];
+
+        user.purchases.forEach((purchase) => {
+            if (!isRemoved && purchase.itemIndex === 1) {
+                isRemoved = true;
+            }
+            else {
+                tempArray.push(purchase);
+            }
+        })
+        user.purchases = tempArray;
+        user.save();
+
+        const mangroveLength = user.purchases.filter(p => p.itemIndex === 0).length;
+        const fertilizerLength = user.purchases.filter(p => p.itemIndex === 1).length;
+
         res.status(200).json({
-            message: `Berhasil memberikan pupuk pada mengrove`,
+            message: `Berhasil memberikan pupuk pada mangrove`,
             status: 200,
             data: mangrove,
+            mangroveLength: mangroveLength,
+            fertilizerLength: fertilizerLength
         });
     }
     catch (error) {
