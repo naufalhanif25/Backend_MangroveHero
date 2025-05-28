@@ -8,7 +8,7 @@ const user = mongoose.Schema({
     totalCoins: {
         type: Number,
         required: true,
-        default: 0,
+        default: 64,
     },
     items: {
         type: Number,

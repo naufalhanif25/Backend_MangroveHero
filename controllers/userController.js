@@ -127,6 +127,8 @@ exports.buyItems = async (req, res) => {
             email: email,
             coinsSpent: cost,
             remainingCoins: tree.totalCoins,
+            mangroveLength: tree.mangroveLength,
+            fertilizerLength: tree.fertilizerLength,
             timestamp: new Date(),
             status: "success",
         };
