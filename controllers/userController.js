@@ -99,9 +99,6 @@ exports.buyItems = async (req, res) => {
         const cost = items === 0 ? 24 : 16;
         const tree = await User.findOne({ email });
 
-        const mangroveLength = tree.purchases.filter(p => p.itemIndex === 0).length;
-        const fertilizerLength = tree.purchases.filter(p => p.itemIndex === 1).length;
-
         if (!tree) {
             return res.status(404).json({
                 success: false,
@@ -124,6 +121,9 @@ exports.buyItems = async (req, res) => {
         });
 
         await tree.save();
+
+        const mangroveLength = tree.purchases.filter(p => p.itemIndex === 0).length;
+        const fertilizerLength = tree.purchases.filter(p => p.itemIndex === 1).length;
 
         const purchaseResult = {
             itemPurchased: item,
