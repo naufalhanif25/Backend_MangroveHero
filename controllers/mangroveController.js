@@ -98,7 +98,7 @@ exports.getCoins = async (req, res) => {
         tree.coins = 0;
         tree.save();
 
-        user.coins += coins;
+        user.totalCoins += coins;
         user.save();
 
         res.status(200).json({
@@ -107,6 +107,7 @@ exports.getCoins = async (req, res) => {
             data: {
                 coins,
             },
+            userCoins: user.totalCoins
         });
     }
     catch (error) {
